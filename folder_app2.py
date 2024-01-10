@@ -5,13 +5,13 @@ Created on Wed Jan 10 08:24:35 2024
 @author: ASUS
 """
 import streamlit as st
+import os
+import pandas as pd
+import plotly.express as px
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 from datetime import datetime
-import os
-import plotly.express as px
-import pandas as pd
 
 def can_open_file(file_path):
     try:
@@ -19,17 +19,22 @@ def can_open_file(file_path):
             pass
         return True
     except Exception as e:
-        print(f"Error abriendo el archivo {file_path}: {e}")
+        print(f"Error opening file {file_path}: {e}")
         return False
 
 def timestamp_to_datetime(timestamp):
     return datetime.fromtimestamp(timestamp).strftime('%d/%m/%y %I:%M %p')
 
-def list_files_and_subfolders(folder, sheet, row_num):
-    for root, dirs, files in os.walk(folder):
+def create_excel_report_local(folder_path, report_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Local Folder Report"
+    ws.append(['Nombre de Archivo', 'Tipo de Archivo', 'Tamaño (bytes)', 'Se puede abrir', 'Ultima modificación', 'Subfolder 1', 'Subfolder 2', 'Subfolder 3', 'Subfolder 4', 'Subfolder 5', 'Subfolder 6', 'Subfolder 7', 'Subfolder 8', 'Subfolder 9', 'Subfolder 10'])
+    
+    for root, dirs, files in os.walk(folder_path):
         # Exclude hidden folders
         dirs[:] = [d for d in dirs if not d.startswith('.')]
-        
+
         for file_name in files:
             file_path = os.path.join(root, file_name)
             file_size = 0
@@ -40,29 +45,17 @@ def list_files_and_subfolders(folder, sheet, row_num):
                 file_size = os.path.getsize(file_path)
                 last_modified = os.path.getmtime(file_path)
             except Exception as e:
-                print(f"Error obteniendo tamaño o fecha de modificacion para {file_path}: {e}")
+                print(f"Error getting size or last modified for {file_path}: {e}")
 
             # Split the folder path into subfolders
-            subfolders = os.path.relpath(root, folder).split(os.path.sep)[:10]
+            subfolders = os.path.relpath(root, folder_path).split(os.path.sep)[:10]
 
             # Fill in empty values if there are fewer than 10 subfolders
             subfolders.extend([''] * (10 - len(subfolders)))
 
             last_modified_formatted = timestamp_to_datetime(last_modified)
 
-            sheet.append([file_name, file_type, file_size, can_open, last_modified_formatted] + subfolders)
-            row_num += 1
-
-    return row_num
-
-def create_excel_report_local(folder_path, report_path):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Reporte de carpeta local"
-    ws.append(['Nombre de Archivo', 'Tipo de Archivo', 'Tamaño (bytes)', 'Se puede abrir', 'Ultima modificación', 'Subfolder 1', 'Subfolder 2', 'Subfolder 3', 'Subfolder 4', 'Subfolder 5', 'Subfolder 6', 'Subfolder 7', 'Subfolder 8', 'Subfolder 9', 'Subfolder 10'])
-
-    row_num = 2  # Start from the second row for data
-    row_num = list_files_and_subfolders(folder_path, ws, row_num)
+            ws.append([file_name, file_type, file_size, can_open, last_modified_formatted] + subfolders)
 
     # Auto-adjust column widths and apply alignment
     for col in ws.columns:
@@ -91,8 +84,8 @@ def main():
         create_excel_report_local(folder_path_local, report_path_local)
         st.success("Reporte Generado exitosamente!")
 
-        st.write(f"Provided folder path: {folder_path}")
-        st.write(f"Is folder accessible? {os.path.exists(folder_path)}")
+        st.write(f"Provided folder path: {folder_path_local}")
+        st.write(f"Is folder accessible? {os.path.exists(folder_path_local)}")
         # Bar plot showing the file types for local folder report
         st.title("Distribución de archivos (Carpeta Local)")
         if os.path.exists(report_path_local):
