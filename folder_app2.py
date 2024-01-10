@@ -85,7 +85,7 @@ def main():
 
     st.header("Generador de Reporte de Carpeta Local")
     folder_path_local = st.text_input("Ruta de la carpeta")
-    report_path_local = st.text_input("Ruta del Reporte")
+    report_path_local = st.text_input("Ruta del Reporte (usar .xlsx al final del nombre del reporte)")
 
     if st.button("Generar Reporte"):
         create_excel_report_local(folder_path_local, report_path_local)
@@ -99,11 +99,8 @@ def main():
             st.info(f'Total Number of Files: {total_files_local}')
 
             file_types_local = df_local['Tipo de Archivo'].apply(lambda x: x.lower().strip() if isinstance(x, str) else 'Unknown').value_counts()
-            fig_local = px.bar(
-            x=file_types_local.index,
-            y=file_types_local.values,
-            labels={'x': 'Tipo de Archivo', 'y': 'Count'}
-        )
+            fig_local = px.bar(df_local, x='Tipo de Archivo', labels={'x': 'Tipo de Archivo', 'y': 'Count'})
+            st.plotly_chart(fig_local)
 
         else:
             st.warning("Generar el reporte para ver distribución de archivos")
