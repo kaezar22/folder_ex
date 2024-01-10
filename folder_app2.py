@@ -99,8 +99,12 @@ def main():
             st.info(f'Total Number of Files: {total_files_local}')
 
             file_types_local = df_local['Tipo de Archivo'].apply(lambda x: x.lower().strip() if isinstance(x, str) else 'Unknown').value_counts()
-            fig_local = px.bar(file_types_local, x=file_types_local.index, y=file_types_local.values, labels={'x': 'Tipo de Archivo', 'y': 'Count'})
-            st.plotly_chart(fig_local)
+            fig_local = px.bar(
+            x=file_types_local.index,
+            y=file_types_local.values,
+            labels={'x': 'Tipo de Archivo', 'y': 'Count'}
+        )
+
         else:
             st.warning("Generar el reporte para ver distribución de archivos")
 
