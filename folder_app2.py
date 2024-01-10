@@ -77,7 +77,7 @@ def main():
     st.title("Generador de Reporte")
 
     st.header("Generador de Reporte de Carpeta Local")
-    folder_path_local = st.text_input("Ruta de la carpeta")
+    folder_path_local = st.text_input("Ruta de la carpeta (relativa)", value=".")
     report_path_local = st.text_input("Ruta del Reporte (usar .xlsx al final del nombre del reporte)")
 
     if st.button("Generar Reporte"):
