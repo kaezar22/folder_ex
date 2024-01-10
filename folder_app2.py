@@ -91,6 +91,8 @@ def main():
         create_excel_report_local(folder_path_local, report_path_local)
         st.success("Reporte Generado exitosamente!")
 
+        st.write(f"Provided folder path: {folder_path}")
+        st.write(f"Is folder accessible? {os.path.exists(folder_path)}")
         # Bar plot showing the file types for local folder report
         st.title("Distribución de archivos (Carpeta Local)")
         if os.path.exists(report_path_local):
