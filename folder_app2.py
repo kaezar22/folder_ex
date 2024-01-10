@@ -73,20 +73,29 @@ def create_excel_report_local(folder_path, report_path):
 
     wb.save(report_path)
 
+
+
 def main():
     st.title("Generador de Reporte")
 
     st.header("Generador de Reporte de Carpeta Local")
-    folder_path_local = st.text_input("Ruta de la carpeta (relativa)", value=".")
+    
+    # Use a relative path from the current working directory
+    folder_path_local = st.text_input("Ruta de la carpeta (relativa al directorio de trabajo)", value="proyectos/180M- OK Migrada")
+    
     report_path_local = st.text_input("Ruta del Reporte (usar .xlsx al final del nombre del reporte)")
 
     if st.button("Generar Reporte"):
-        create_excel_report_local(folder_path_local, report_path_local)
+        # Convert the relative path to an absolute path
+        folder_path_local_absolute = os.path.abspath(folder_path_local)
+        
+        create_excel_report_local(folder_path_local_absolute, report_path_local)
         st.success("Reporte Generado exitosamente!")
 
-        st.write(f"Provided folder path: {folder_path_local}")
-        st.write(f"Is folder accessible? {os.path.exists(folder_path_local)}")
-        # Bar plot showing the file types for local folder report
+        st.write(f"Provided folder path: {folder_path_local_absolute}")
+        st.write(f"Is folder accessible? {os.path.exists(folder_path_local_absolute)}")
+        
+        # Bar plot showing the file types for the local folder report
         st.title("Distribución de archivos (Carpeta Local)")
         if os.path.exists(report_path_local):
             df_local = pd.read_excel(report_path_local)
@@ -102,3 +111,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
